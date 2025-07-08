@@ -10,3 +10,4 @@ lark
 streamlit
 pypdf
 python-docx
+pysqlite3-binary
