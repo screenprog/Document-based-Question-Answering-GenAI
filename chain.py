@@ -69,7 +69,8 @@ def get_gemini_response(query: str, context: List[str]) -> str:
 
 def retrieve_documents(query, persist_directory: str = 'Q&A', collection_name: str='collection'):
     embedding_function = GoogleGenerativeAIEmbeddings(
-        model="models/embedding-001", google_api_key=GOOGLE_API_KEY
+        model="models/embedding-001",
+        google_api_key=GOOGLE_API_KEY
     )
     vector_store = Chroma(
         persist_directory=persist_directory,

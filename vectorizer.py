@@ -9,16 +9,24 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 load_dotenv()
 
+client = chromadb.PersistentClient(path='Q&A')
+collection_name = 'collection'
+embedding_function = embedding_functions.GoogleGenerativeAiEmbeddingFunction(
+        model_name="models/embedding-001",
+        api_key=GOOGLE_API_KEY
+    )
+
 def get_available_documents():
-    client = chromadb.PersistentClient(path='Q&A')
-    collection = client.get_collection(name='collection')
+    collection = client.get_or_create_collection(
+        name=collection_name,
+        embedding_function=embedding_function
+    )
     docs_metadata = collection.get()["metadatas"]
     if not docs_metadata:
         return []
     return set(meta["filename"] for meta in docs_metadata)
 
-def create_vector_store_from_files(files: list, persist_directory: str = 'Q&A', collection_name: str='collection'):
-    client = chromadb.PersistentClient(path=persist_directory)
+def create_vector_store_from_files(files: list):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     documents = []
     metadatas = []
@@ -41,10 +49,7 @@ def create_vector_store_from_files(files: list, persist_directory: str = 'Q&A', 
             documents.append(doc)
             metadatas.append({"filename": file.name})
 
-    embedding_function = embedding_functions.GoogleGenerativeAiEmbeddingFunction(
-        model_name="models/text-embedding-004",
-        api_key=GOOGLE_API_KEY
-    )
+
     collection = client.get_or_create_collection(
         name=collection_name,
         embedding_function=embedding_function
@@ -53,11 +58,11 @@ def create_vector_store_from_files(files: list, persist_directory: str = 'Q&A', 
     print(f"Collection already contains {count} documents")
     ids = [str(i) for i in range(count, count + len(documents))]
     for i in tqdm(
-            range(0, len(documents), 100), desc="Adding documents", unit_scale=100
+            range(0, len(documents), 512), desc="Adding documents", unit_scale=512
     ):
         collection.add(
-            ids=ids[i: i + 100],
-            documents=documents[i: i + 100],
-            metadatas=metadatas[i: i + 100],
+            ids=ids[i: i + 512],
+            documents=documents[i: i + 512],
+            metadatas=metadatas[i: i + 512],
         )
     return collection.count() - count

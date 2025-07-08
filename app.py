@@ -26,21 +26,24 @@ def main():
 
     with st.sidebar:
         st.header("Your Documents")
-        st.subheader("Available Documents")
-        available_docs = get_available_documents()
-        for doc_name in available_docs:
-            st.write(f"📄 {doc_name}")
         st.divider()
         uploaded_files = st.file_uploader(
             "Upload your PDF or DOCX file here",
             accept_multiple_files=True,
             type=["pdf", "docx"]
         )
-        if st.button("Process Documents"):
-            with st.spinner("Processing..."):
-                chunks = create_vector_store_from_files(uploaded_files)
-                st.write(fr"Created {chunks} chunks")
-                st.success("Done!")
+        if uploaded_files:
+            if st.button("Process Documents"):
+                with st.spinner("Processing..."):
+                    chunks = create_vector_store_from_files(uploaded_files)
+                    st.write(fr"Created {chunks} chunks")
+                    st.success("Done!")
+        st.divider()
+        st.subheader("Available Documents")
+        available_docs = get_available_documents()
+        for doc_name in available_docs:
+            st.write(f"📄 {doc_name}")
+
 
     if query:=st.chat_input("Ask a question about your documents"):
         st.session_state.messages.append({"role": "user", "content": query})
