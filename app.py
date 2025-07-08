@@ -25,8 +25,10 @@ def main():
                     st.write(message["sources"])
 
     with st.sidebar:
+        st.caption(
+            "⚠️ Please do not upload any confidential or private documents. All uploaded documents are currently accessible to all users of this application.")
         st.header("Your Documents")
-        st.divider()
+        # st.divider()
         uploaded_files = st.file_uploader(
             "Upload your PDF or DOCX file here",
             accept_multiple_files=True,
@@ -46,6 +48,7 @@ def main():
 
 
     if query:=st.chat_input("Ask a question about your documents"):
+        st.caption("⚠️ Please do not upload any confidential or private documents. All uploaded documents are currently accessible to all users of this application.")
         st.session_state.messages.append({"role": "user", "content": query})
         with st.chat_message("user"):
             st.markdown(query)
