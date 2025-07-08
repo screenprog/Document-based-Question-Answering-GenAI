@@ -1,0 +1,14 @@
+#Environment
+.venv
+.env
+
+#JetBrains IDE
+.idea/
+
+#ChromaDB
+chroma_storage/
+
+__pycache__/
+Streamlit_App_Explanation.md
+Q&A
+documents
